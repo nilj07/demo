@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Upload</title>
+</head>
+
+<body>
+    <h2>Add Logo</h2>
+    <input type="file" id="logoInput" accept="image/*" />
+    <button onclick="uploadLogo()">Add Logo</button>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        // Firebase config (replace with your config)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+        import { getDatabase, push, ref as dbRef, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            databaseURL: "https://fir-5dbda-default-rtdb.firebaseio.com/",
+            apiKey: "AIzaSyDv7ZM-Z_RxR9bKCIgefD-QGrEwTEtKf54",
+            authDomain: "fir-5dbda.firebaseapp.com",
+            projectId: "fir-5dbda",
+            storageBucket: "fir-5dbda.firebasestorage.app",
+            messagingSenderId: "880650332436",
+            appId: "1:880650332436:web:454c20d335e2657b943a01"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+        const database = getDatabase(app);
+
+        window.uploadLogo = async function () {
+            const fileInput = document.getElementById('logoInput');
+            const file = fileInput.files[0];
+            if (!file) return alert("Please select a file.");
+
+            const storageRef = ref(storage, 'logos/' + Date.now() + '_' + file.name);
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+
+            const newImageRef = push(dbRef(database, 'logos'));
+            await set(newImageRef, { imageUrl: downloadURL });
+
+            alert("Logo uploaded successfully!");
+            fileInput.value = '';
+        };
+    </script>
+</body>
+
+</html>
