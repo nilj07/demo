@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Logo Gallery</title>
+</head>
+
+<body>
+    <h2>Gallery</h2>
+    <div id="gallery"></div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref as dbRef, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            databaseURL: "https://fir-5dbda-default-rtdb.firebaseio.com/",
+            apiKey: "AIzaSyDv7ZM-Z_RxR9bKCIgefD-QGrEwTEtKf54",
+            authDomain: "fir-5dbda.firebaseapp.com",
+            projectId: "fir-5dbda",
+            storageBucket: "fir-5dbda.firebasestorage.app",
+            messagingSenderId: "880650332436",
+            appId: "1:880650332436:web:454c20d335e2657b943a01"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const galleryRef = dbRef(database, 'logos');
+        const galleryDiv = document.getElementById('gallery');
+
+        onValue(galleryRef, (snapshot) => {
+            galleryDiv.innerHTML = ''; // Clear gallery first
+            snapshot.forEach(child => {
+                const imgURL = child.val().imageUrl;
+                const img = document.createElement('img');
+                img.src = imgURL;
+                img.style.width = '200px';
+                img.style.margin = '10px';
+                galleryDiv.appendChild(img);
+            });
+        });
+    </script>
+</body>
+
+</html>
